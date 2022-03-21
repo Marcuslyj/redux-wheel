@@ -25,7 +25,7 @@ const 大儿子 = () => (
 const 二儿子 = () => (
   <section>
     二儿子
-    <Wrapper />
+    <UserModifier>内容</UserModifier>
   </section>
 );
 const 幺儿子 = () => <section>幺儿子</section>;
@@ -51,16 +51,20 @@ const reducer = (state, { type, payload }) => {
   }
 };
 
-const Wrapper = () => {
-  const { appState, setAppState } = useContext(appContext);
-  // dispatch规范setState流程
-  const dispatch = (action) => {
-    setAppState(reducer(appState, action));
+// connect创建高阶组件，注入dispatch、state
+// 让组件和全局状态链接起来
+const connect = (Component) => {
+  return (props = {}) => {
+    const { appState, setAppState } = useContext(appContext);
+    // dispatch规范setState流程
+    const dispatch = (action) => {
+      setAppState(reducer(appState, action));
+    };
+    return <Component {...props} dispatch={dispatch} state={appState} />;
   };
-  return <UserModifier dispatch={dispatch} state={appState} />;
 };
 
-const UserModifier = ({ dispatch, state }) => {
+const _UserModifier = ({ dispatch, state, children }) => {
   const { appState, setAppState } = useContext(appContext);
   const onChange = (e) => {
     dispatch({
@@ -70,7 +74,10 @@ const UserModifier = ({ dispatch, state }) => {
   };
   return (
     <div>
+      {children}
       <input value={appState.user.name} onChange={onChange} />
     </div>
   );
 };
+
+const UserModifier = connect(_UserModifier);
