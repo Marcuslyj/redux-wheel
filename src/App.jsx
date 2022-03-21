@@ -15,6 +15,7 @@ export const App = () => {
     </appContext.Provider>
   )
 }
+
 const 大儿子 = () => <section>大儿子<User/></section>
 const 二儿子 = () => <section>二儿子<UserModifier/></section>
 const 幺儿子 = () => <section>幺儿子</section>
@@ -27,10 +28,10 @@ const UserModifier = () => {
   const {appState, setAppState} = useContext(appContext)
   const onChange = (e) => {
     appState.user.name = e.target.value
-    setAppState({...contextValue.appState})
+    setAppState({...appState})
   }
   return <div>
-    <input value={contextValue.appState.user.name}
+    <input value={appState.user.name}
       onChange={onChange}/>
   </div>
 }
