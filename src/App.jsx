@@ -31,10 +31,12 @@ const 二儿子 = () => {
     </section>
   );
 };
-const 幺儿子 = () => {
+const 幺儿子 = connect(state => {
+  return { group: state.group }
+})(({ group }) => {
   console.log("幺儿子", Math.random());
-  return <section>幺儿子</section>;
-};
+  return <section>幺儿子<div>Group：{group.name}</div></section>;
+});
 
 
 

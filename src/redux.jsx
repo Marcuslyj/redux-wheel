@@ -1,5 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 
+const changed = (oldState, newState) => {
+  let changed = false;
+  for (let key in oldState) {
+    if (oldState[key] !== newState[key]) {
+      changed = true
+      break;
+    }
+  }
+  return changed
+}
 // connect创建高阶组件，注入dispatch、state
 // 让组件和全局状态链接起来
 export const connect = (selector) => (Component) => {
@@ -10,8 +20,15 @@ export const connect = (selector) => (Component) => {
     const data = selector ? selector(state) : { state };
     // 只订阅一次
     useEffect(() => {
-      store.subscribe(() => update({}));
-    }, []);
+      store.subscribe(() => {
+        const newData = selector ? selector(store.state) : { state: store.state }
+        if (changed(data, newData)) {
+          console.log('update')
+          update({})
+        }
+      });
+      // 注意这里最好取消订阅，否则selectore变化是回出现重复订阅
+    }, [selector]);
 
     // dispatch规范setState流程
     const dispatch = (action) => {
@@ -29,6 +46,7 @@ export const appContext = React.createContext(null);
 export const store = {
   state: {
     user: { name: "frank", age: 18 },
+    group: { name: '前端组' }
   },
   setState(newState) {
     store.state = newState;
