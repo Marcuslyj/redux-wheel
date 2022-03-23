@@ -12,12 +12,20 @@ const changed = (oldState, newState) => {
 }
 // connect创建高阶组件，注入dispatch、state
 // 让组件和全局状态链接起来
-export const connect = (selector) => (Component) => {
+export const connect = (selector, dispatchSelector) => (Component) => {
   return (props = {}) => {
     const { state, setState } = useContext(appContext);
     // 强制刷新被connect组件
     const [, update] = useState({});
     const data = selector ? selector(state) : { state };
+    // dispatch规范setState流程
+    const dispatch = (action) => {
+      // console.log("dispatch");
+      // console.log(setState);
+      // console.log(reducer(state, action));
+      setState(reducer(state, action));
+    };
+    const dispatchers = dispatchSelector ? dispatchSelector(dispatch) : { dispatch }
     // 只订阅一次
     useEffect(() => {
       store.subscribe(() => {
@@ -30,14 +38,7 @@ export const connect = (selector) => (Component) => {
       // 注意这里最好取消订阅，否则selectore变化是回出现重复订阅
     }, [selector]);
 
-    // dispatch规范setState流程
-    const dispatch = (action) => {
-      // console.log("dispatch");
-      // console.log(setState);
-      // console.log(reducer(state, action));
-      setState(reducer(state, action));
-    };
-    return <Component {...props} dispatch={dispatch} {...data} />;
+    return <Component {...props} {...dispatchers} {...data} />;
   };
 };
 

@@ -48,13 +48,10 @@ const User = connect(state => {
   return <div>User:{user.name}</div>;
 });
 
-const _UserModifier = ({ dispatch, state, children }) => {
+const _UserModifier = ({ updateUser, state, children }) => {
   console.log('_UserModifier 执行了', Math.random());
   const onChange = (e) => {
-    dispatch({
-      type: "updateUser",
-      payload: { name: e.target.value },
-    });
+    updateUser({ name: e.target.value })
   };
   return (
     <div>
@@ -64,4 +61,8 @@ const _UserModifier = ({ dispatch, state, children }) => {
   );
 };
 
-const UserModifier = connect()(_UserModifier);
+const UserModifier = connect(null, (dispatch) => {
+  return {
+    updateUser: attrs => dispatch({ type: 'updateUser', payload: attrs })
+  }
+})(_UserModifier);
