@@ -38,10 +38,12 @@ const 幺儿子 = () => {
 
 
 
-const User = connect(({ state }) => {
+const User = connect(state => {
+  return { user: state.user }
+})(({ user }) => {
   console.log('user 执行了', Math.random());
   // return <div>hihi</div>
-  return <div>User:{state.user.name}</div>;
+  return <div>User:{user.name}</div>;
 });
 
 const _UserModifier = ({ dispatch, state, children }) => {
@@ -60,4 +62,4 @@ const _UserModifier = ({ dispatch, state, children }) => {
   );
 };
 
-const UserModifier = connect(_UserModifier);
+const UserModifier = connect()(_UserModifier);
